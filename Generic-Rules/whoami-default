@@ -20,5 +20,5 @@ rules:
 # '"C:\Windows\system32\whoami.exe"'
 
 #Respond
-action: Report
-name: Whoami Executed from default location
+- action: Report
+  name: Whoami Executed from default location
