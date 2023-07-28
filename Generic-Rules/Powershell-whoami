@@ -1,0 +1,32 @@
+#detect
+
+event: NEW_PROCESS
+op: or
+rules:
+  - op: is
+    path: event/FILE_PATH
+    value: C:\Windows\system32\whoami.exe
+  - op: is
+    path: event/COMMAND_LINE
+    value: C:\Windows\system32\whoami.exe
+  - op: contains
+    path: event/COMMAND_LINE
+    value: whoami.exe
+  - op: and
+    rules:
+      - op: is
+        path: event/COMMAND_LINE
+        value: powershell
+      - op: contains
+        path: event/COMMAND_LINE
+        value: whoami.exe
+
+# Author: Gekko 
+# Experimental
+# Created rule to detect when whoami is ran in cmd or powershell
+# marked as Experimental but tested on event logs
+
+#respond
+
+- action: report
+  name: Powershell whoami
