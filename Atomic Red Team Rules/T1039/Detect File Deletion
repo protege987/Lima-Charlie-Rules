@@ -1,0 +1,41 @@
+# Author: Gekko 
+# Experimental
+
+
+# Rule: Detect File Deletion from Specific Network Share or Temp Folder
+event: NEW_PROCESS
+op: and
+rules:
+  # Condition 1: Look for specific command patterns associated with file deletion.
+  - op: or
+    rules:
+      # Sub-condition 1a: Detect file deletion using "cmd.exe" command.
+      - op: contains
+        path: event/COMMAND_LINE
+        value: '"cmd.exe" /c "del \\'
+
+      # Sub-condition 1b: Detect file deletion using "powershell.exe" command.
+      - op: contains
+        path: event/COMMAND_LINE
+        value: '"powershell.exe" -Command "Remove-Item \\\\'
+
+  # Condition 2: Check if the file deletion is occurring from specific network shares or temp folders.
+  - op: or
+    rules:
+      # Sub-condition 2a: Detect file deletion from the network share "\\127.0.0.1\C$\Windows\temp\".
+      - op: contains
+        path: event/COMMAND_LINE
+        value: \\127.0.0.1\C$\Windows\temp\
+
+      # Sub-condition 2b: Detect file deletion from the temp folder "%TEMP%".
+      - op: contains
+        path: event/COMMAND_LINE
+        value: '%TEMP%\'
+
+
+- action: report
+  name: Delete file from file share
+- action: task
+  command:
+    - deny_tree
+    - <<routing/parent>>
