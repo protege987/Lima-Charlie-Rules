@@ -1,0 +1,29 @@
+# Data from Network Shared Drive 
+# Author: Gekko 
+# Experimental
+# Rule to detect specific PowerShell command-line execution while excluding events with username "Asta."
+# PowerShell command to test path is expected to be included within the COMMAND_LINE field.
+
+# Detect
+
+event: NEW_PROCESS
+op: and
+rules:
+  - op: contains
+    case sensitive: false
+    path: event/COMMAND_LINE
+    value: '"powershell.exe" & {if (Test-Path'
+  - op: matches
+    path: event/USER_NAME
+    re: .*Asta.*
+    case sensitive: false
+    not: true
+
+# Respond
+
+- action: report
+  name: Detect PS Test-Path
+- action: task
+  command:
+    - deny_tree
+    - <<routing/parent>>
