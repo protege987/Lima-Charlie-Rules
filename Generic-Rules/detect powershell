@@ -1,0 +1,35 @@
+# Author: Gekko 
+# Experimental
+
+# Detect
+  
+event: NEW_PROCESS
+op: or
+rules:
+  - op: is
+    path: event/FILE_PATH
+    value: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+  - op: contains
+    path: event/COMMAND_LINE
+    value: powershell.exe
+  - op: contains
+    path: event/COMMAND_LINE
+    value: cmd.exe
+  - op: contains
+    path: event/COMMAND_LINE
+    value: /c
+  - op: contains
+    path: event/COMMAND_LINE
+    value: '-Command'
+  - op: contains
+    path: event/PARENT/COMMAND_LINE
+    value: powershell.exe
+  - op: contains
+    path: event/PARENT/COMMAND_LINE
+    value: cmd.exe
+
+
+# Respond      
+
+- action: report
+  name: Detect powershell      
