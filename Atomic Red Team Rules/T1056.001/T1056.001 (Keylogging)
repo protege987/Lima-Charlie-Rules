@@ -1,0 +1,37 @@
+# Author: Gekko 
+# Experimental
+
+
+# Rule: Behavioral-Based Detection - Unusual Kernel Driver Installation (Input Capture/Keylogging)
+event: DRIVER_LOAD
+op: or
+rules:
+  # Condition 1: Detection of known malicious kernel driver hashes.
+  - op: is
+    path: event/DRIVER_HASH
+    value: "<known_malicious_driver_hash>"
+
+  # Condition 2: Untrusted driver signing.
+  - op: contains
+    path: event/DRIVER_SIGNER
+    value: "<untrusted_signer_name>"
+
+  # Condition 3: Suspicious driver file paths.
+  - op: matches
+    path: event/DRIVER_FILE_PATH
+    re: ".*\\\\System32\\\\Drivers\\\\.*(key|log|captur).*"
+
+  # Condition 4: Privilege escalation for driver installation.
+  - op: contains
+    path: event/COMMAND_LINE
+    value: "fltmc load <suspicious_driver_name>"
+
+  # Condition 5: Drivers loaded by uncommon processes.
+  - op: is
+    path: event/PARENT/IMAGE_PATH
+    value: "<uncommon_parent_process_path>"
+
+  # Add more conditions as needed based on specific indicators and behaviors.
+
+- action: report
+  name: Unusual Kernel Driver Installation (Keylogging)
