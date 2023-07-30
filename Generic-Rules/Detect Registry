@@ -1,0 +1,38 @@
+# Author: Gekko 
+# Experimental
+
+# Detect
+
+# Rule: Monitor regedit.exe Execution
+event: NEW_PROCESS
+op: or
+rules:
+  # Condition 1: Execution of regedit.exe through GUI
+  - op: is
+    path: event/FILE_PATH
+    value: C:\Windows\regedit.exe
+    case sensitive: false  
+    
+  # Condition 2: Execution of regedit.exe via command line
+  - op: is
+    path: event/COMMAND_LINE
+    value: "\"C:\\Windows\\regedit.exe\""
+    case sensitive: false  
+
+  # Condition 3: Execution of regedit.exe stealthily through cmd.exe
+  - op: contains
+    path: event/COMMAND_LINE
+    value: "\"cmd.exe\" /c \"regedit.exe\""
+    case sensitive: false  
+    
+  # Condition 4: Execution of regedit.exe stealthily through powershell.exe
+  - op: contains
+    path: event/COMMAND_LINE
+    value: "\"powershell.exe\" -Command \"regedit.exe\""  
+    case sensitive: false  
+  
+  # Respond
+
+- action: report
+  name: Detect Registry
+
