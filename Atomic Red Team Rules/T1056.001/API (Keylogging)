@@ -1,0 +1,46 @@
+# Author: Gekko 
+# Experimental
+
+
+# Rule: Behavioral-Based Detection - Potential Keylogger Activity
+event: NEW_PROCESS
+op: or
+rules:
+  # Condition 1: PowerShell script execution with keystroke capturing behavior.
+ 
+  - op: matches
+    path: event/COMMAND_LINE
+    re: 'powershell.exe.*Get-Keystrokes\.ps1.*-LogPath.*\$env:TEMP\\key\.log'
+    case sensitive: false
+  
+  # Condition 2: Suspicious keylogger process name.
+  - op: is
+    path: event/IMAGE_PATH
+    value: "keylogger.exe"
+
+  # Condition 3: Detection of known keylogger process names.
+  - op: is
+    path: event/IMAGE_PATH
+    value: "malicious_keylogger.exe"
+
+  # Condition 4: Process accessing keyboard input (GetAsyncKeyState).
+  - op: contains
+    path: event/COMMAND_LINE
+    value: "GetAsyncKeyState"
+
+  # Condition 5: Process intercepting API calls (SetWindowsHookEx).
+  - op: contains
+    path: event/COMMAND_LINE
+    value: "SetWindowsHookEx"
+
+  # Condition 6: Process accessing keyboard input (GetKeyState).
+  - op: contains
+    path: event/COMMAND_LINE
+    value: "GetKeyState"
+
+  # Add more conditions as needed based on additional behavioral indicators.
+
+# Respond
+
+- action: report
+  name: API (Keylogging)
