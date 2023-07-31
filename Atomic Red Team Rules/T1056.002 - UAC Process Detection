@@ -1,0 +1,22 @@
+# Author: Gekko 
+# Experimental
+
+# Detect
+
+# Rule: Phishing - UAC Mimicking Pop-up
+event: NEW_PROCESS
+op: and
+rules:
+  # Condition 1: Monitor specific file path for consent.exe.
+  - op: is
+    path: event/FILE_PATH
+    value: "C:\\Windows\\system32\\consent.exe"
+
+  # Condition 2: Monitor parent command line with svchost.exe using a regular expression.
+  - op: matches
+    path: event/PARENT/COMMAND_LINE
+    re: '.*\\svchost\.exe.*'
+
+# Respond
+- action: report
+  name: UAC Process Detection
